@@ -1,3 +1,18 @@
+import os
+import json
+
+class ConfigValueError(Exception):
+    """
+    Exception that indicates that the v20 configuration file is missing
+    a required value
+    """
+
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return "Config is missing value for '{}'.".format(self.value)
+
 class Config(object):
     """
     The Config object encapsulates all of the configuration required to create
@@ -6,6 +21,8 @@ class Config(object):
     Using the Config object enables the scripts to exist without many command
     line arguments (host, token, accountID, etc)
     """
+    config = Config()
+
     def __init__(self):
         """
         Initialize an empty Config object
@@ -54,34 +71,20 @@ class Config(object):
         with open(path, "w") as f:
             print(str(self), file=f)
 
-    def load(self, path):
+
+    def load(self):
         """
-        Load the YAML config representation from a file into the Config instance
-
-        Args:
-            path: The location to read the config YAML from
+        Load config from environment into Config instance
         """
-
-        self.path = path
-
-        try:
-            with open(os.path.expanduser(path)) as f:
-                y = yaml.load(f)
-                self.hostname = y.get("hostname", self.hostname)
-                self.streaming_hostname = y.get(
-                    "streaming_hostname", self.streaming_hostname
-                )
-                self.port = y.get("port", self.port)
-                self.ssl = y.get("ssl", self.ssl)
-                self.username = y.get("username", self.username)
-                self.token = y.get("token", self.token)
-                self.accounts = y.get("accounts", self.accounts)
-                self.active_account = y.get(
-                    "active_account", self.active_account
-                )
-                self.datetime_format = y.get("datetime_format", self.datetime_format)
-        except:
-            raise ConfigPathError(path)
+        self.hostname = os.getenv("hostname")
+        self.streaming_hostname = os.getenv("streaming_hostname")
+        self.port = os.getenv("port")
+        self.ssl = os.getenv("ssl")
+        self.username = os.getenv("username")
+        self.token = os.getenv("token")
+        self.accounts = json.loads(os.getenv("accounts"))
+        self.active_account = os.getenv("active_account")
+        self.datetime_format = os.getenv("datetime_format")
 
     def validate(self):
         """
