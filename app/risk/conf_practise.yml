@@ -1,0 +1,10 @@
+hostname: api-fxpractice.oanda.com
+streaming_hostname: stream-fxpractice.oanda.com/
+port: 443
+ssl: true
+token: 55ab839305c5d0e1206c0a7d1168e178-e8fc5b3f5ee403ff98947dbe132cb877
+username: cchuan23_practise
+datetime_format: UNIX
+accounts:
+- 101-004-12878994-001
+active_account: 101-004-12878994-001
