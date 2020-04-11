@@ -1,6 +1,7 @@
 import pytest
 from app.risk.config import Config
 from app.risk.candles import Candles
+from datetime import datetime
 
 @pytest.fixture
 def api():
@@ -14,7 +15,7 @@ def subject(api):
     return subject
 
 def test_fetch_candles(subject):
-    result = subject.fetch_candles(15)
+    time, result = subject.fetch_candles(15)
     assert len(result) == 15
     for element in result:
         assert type(element.o) is float
@@ -22,10 +23,14 @@ def test_fetch_candles(subject):
         assert type(element.l) is float
         assert type(element.c) is float
 
-    result = subject.fetch_candles(1)
+    assert type(time) is datetime
+
+    time, result = subject.fetch_candles(1)
     assert len(result) == 1
     for element in result:
         assert type(element.o) is float
         assert type(element.h) is float
         assert type(element.l) is float
         assert type(element.c) is float
+
+    assert type(time) is datetime
