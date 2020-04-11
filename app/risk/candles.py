@@ -21,8 +21,7 @@ class Candles:
             return
 
         candles = response.get("candles", 200)
-
-        for candle in response.get("candles", 200):
+        for candle in candles:
             candle_list.append(candle.mid)
 
         return candle_list
