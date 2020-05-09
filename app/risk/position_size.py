@@ -1,6 +1,6 @@
 import os
 from math import ceil
-from app.risk.config import Config
+from app.common.config import Config
 from app.risk.atr import ATR
 from datetime import datetime
 
@@ -77,6 +77,7 @@ class PositionSize:
                 self.latest_gbpusd = (price.bids[0].price + price.asks[0].price) / 2.0
 
 if __name__ == "__main__":
+    os.environ["TESTING"] = "FALSE"
     #os.environ["TESTING"] = "TRUE"
     ctx = Config()
     ctx.load()
