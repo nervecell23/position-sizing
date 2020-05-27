@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 from app.common.config import Config
 # class NoPositionBucketError(Exception):
 #     def __init__(self, content):
@@ -12,8 +13,11 @@ class ReadPositionBook:
         self.instrument = instrument
         self.kwargs = {}
 
-    def fetch_position_book(self):
-        response = self.api.instrument.position_book(self.instrument)
+    def fetch_position_book(self, time=None):
+        if time == None:
+            response = self.api.instrument.position_book(self.instrument)
+        else:
+            response = self.api.instrument.position_book(self.instrument, **{'time': time})
 
         if response.status != 200:
             print(response)
@@ -21,14 +25,15 @@ class ReadPositionBook:
             return
 
         position_book = response.get("positionBook", 200)
+        t = position_book.time
         position_bucket = position_book.buckets
-
         long_percentage_total = sum(map(lambda element: element.longCountPercent, position_bucket))
 
 
 
         short_percentage_total = sum(map(lambda element: element.shortCountPercent, position_bucket))
 
+        print(f"TIME: {t}")
         print("LONG PERCENTAGE TOTAL")
         print(long_percentage_total)
         print("SHORT PERCENTAGE TOTAL")
