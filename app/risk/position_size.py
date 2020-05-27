@@ -51,6 +51,16 @@ class PositionSize:
         self.current_atr = self.atr.calculate_atr("EUR_USD")
         self.position_size = self.balance * self.single_loss_percent * self.latest_baserate / (self.current_atr * self.atr_multiply_coe)
 
+    def output_result(self):
+        r = {}
+        r["balance"] = self.balance
+        r["account_number"] = self.ctx.active_account
+        r["base_rate"] = self.latest_baserate
+        r["base_rate_time"] = self.latest_baserate_time
+        r["atr"] = self.current_atr
+        r["position_size"] = self.position_size
+        return r
+
     def print_result(self):
         print(f"Active account: {self.ctx.active_account}")
         print(f"-> Current balance: {self.balance}")
