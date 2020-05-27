@@ -33,6 +33,8 @@ class PositionSize:
         self.atr_multiply_coe = atr_multiply_coe
         self.atr = ATR(api=self.api)
         self.balance = None
+        self.current_atr = None
+        self.position_size = None
 
         # exchange rate between base currency (GBP) and purchasing currency for a pair. e.g. For EURUSD, USD is the purchasing currency
         self.latest_baserate_time = None
@@ -46,16 +48,15 @@ class PositionSize:
     def calculate_position_size(self):
         self._fetch_baserate("GBP_USD")
         self._fetch_total_balance()
-        current_atr = self.atr.calculate_atr("EUR_USD")
+        self.current_atr = self.atr.calculate_atr("EUR_USD")
+        self.position_size = self.balance * self.single_loss_percent * self.latest_baserate / (self.current_atr * self.atr_multiply_coe)
 
+    def print_result(self):
         print(f"Active account: {self.ctx.active_account}")
         print(f"-> Current balance: {self.balance}")
         print(f"-> Current base rate: {self.latest_baserate:.5f} @ {datetime.fromtimestamp(float(self.latest_baserate_time))}")
-        print(f"-> Current ATR({self.atr.period}): {current_atr:.5f}")
-
-        position_size = self.balance * self.single_loss_percent * self.latest_baserate / (current_atr * self.atr_multiply_coe)
-
-        print(f"-> Position Size: {position_size:.1f}")
+        print(f"-> Current ATR({self.atr.period}): {self.current_atr:.5f}")
+        print(f"-> Position Size: {self.position_size:.1f}")
 
     def _fetch_total_balance(self):
         account_id = self.ctx.active_account
@@ -88,3 +89,4 @@ if __name__ == "__main__":
     api = ctx.create_context()
     ps = PositionSize(ctx, api)
     ps.calculate_position_size()
+    ps.print_result()
