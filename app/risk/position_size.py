@@ -33,24 +33,27 @@ class PositionSize:
         self.atr_multiply_coe = atr_multiply_coe
         self.atr = ATR(api=self.api)
         self.balance = None
-        self.latest_gbpusd_time = None
-        self.latest_gbpusd = None
+
+        # exchange rate between base currency (GBP) and purchasing currency for a pair. e.g. For EURUSD, USD is the purchasing currency
+        self.latest_baserate_time = None
+        self.latest_baserate = None
+
         self.saxo_balance = saxo_balance
         self.forex_balance = forex_balance
 
 
     # main work here
     def calculate_position_size(self):
-        self._fetch_gbpusd()
+        self._fetch_baserate("GBP_USD")
         self._fetch_total_balance()
-        current_atr = self.atr.calculate_atr()
+        current_atr = self.atr.calculate_atr("EUR_USD")
 
         print(f"Active account: {self.ctx.active_account}")
         print(f"-> Current balance: {self.balance}")
-        print(f"-> Current GBPUSD: {self.latest_gbpusd:.5f} @ {datetime.fromtimestamp(float(self.latest_gbpusd_time))}")
+        print(f"-> Current base rate: {self.latest_baserate:.5f} @ {datetime.fromtimestamp(float(self.latest_baserate_time))}")
         print(f"-> Current ATR({self.atr.period}): {current_atr:.5f}")
 
-        position_size = self.balance * self.single_loss_percent * self.latest_gbpusd / (current_atr * self.atr_multiply_coe)
+        position_size = self.balance * self.single_loss_percent * self.latest_baserate / (current_atr * self.atr_multiply_coe)
 
         print(f"-> Position Size: {position_size:.1f}")
 
@@ -63,8 +66,8 @@ class PositionSize:
             raise FetchBalanceError(response_status)
         self.balance = response.get("account").balance + self.saxo_balance + self.forex_balance
 
-    def _fetch_gbpusd(self):
-        response = self.api.pricing.get(accountID=self.ctx.active_account, instruments="GBP_USD", since=self.latest_gbpusd_time)
+    def _fetch_baserate(self, instrument):
+        response = self.api.pricing.get(accountID=self.ctx.active_account, instruments=instrument, since=self.latest_baserate_time)
 
         if response.status != 200:
             raise FetchBalanceError(response.status, response.body)
@@ -72,9 +75,9 @@ class PositionSize:
         prices = response.get("prices", 200)
 
         for price in prices:
-            if self.latest_gbpusd_time == None or price.time > self.latest_gbpusd_time:
-                self.latest_gbpusd_time = price.time
-                self.latest_gbpusd = (price.bids[0].price + price.asks[0].price) / 2.0
+            if self.latest_baserate_time == None or price.time > self.latest_baserate_time:
+                self.latest_baserate_time = price.time
+                self.latest_baserate = (price.bids[0].price + price.asks[0].price) / 2.0
 
 if __name__ == "__main__":
     os.environ["TESTING"] = "FALSE"

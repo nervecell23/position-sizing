@@ -22,8 +22,8 @@ class ATR:
         self.updated_time = datetime.fromtimestamp(0.0)
         self.period = period
 
-    def _populate_candle_list(self):
-        fetched_updated_time, fetched_candle_list = self.candles.fetch_candles(candle_count=self.period+2)
+    def _populate_candle_list(self, instrument):
+        fetched_updated_time, fetched_candle_list = self.candles.fetch_candles(instrument=instrument, candle_count=self.period+2)
 
         if self._is_updated(fetched_updated_time):
             self.candle_list = fetched_candle_list[-(self.period+1):]
@@ -35,8 +35,8 @@ class ATR:
         return False
 
 
-    def calculate_atr(self):
-        self._populate_candle_list()
+    def calculate_atr(self, instrument):
+        self._populate_candle_list(instrument)
 
         if len(self.candle_list) < self.period+1:
             raise InputCandleError(self.candle_list)

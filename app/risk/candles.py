@@ -5,16 +5,14 @@ from datetime import datetime
 
 class Candles:
 
-    def __init__(self, api, instrument="EUR_USD"):
+    def __init__(self, api):
         self.api = api
-        self.instrument = instrument
-
         self.kwargs = {}
         self.kwargs["granularity"] = "H8"
 
-    def fetch_candles(self, candle_count):
+    def fetch_candles(self, instrument, candle_count):
         self.kwargs["count"] = candle_count
-        response = self.api.instrument.candles(self.instrument, **self.kwargs)
+        response = self.api.instrument.candles(instrument, **self.kwargs)
         candle_list = []
         updated_time = None
         prev_updated_time = datetime.fromtimestamp(0.0)
