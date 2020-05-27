@@ -1,4 +1,5 @@
-from app import app, random_message
+from app import app, random_message, ps
+from flask import request
 
 @app.route("/")
 def hello():
@@ -7,7 +8,10 @@ def hello():
 
 @app.route("/position_size")
 def position_size():
-    return random_message + ' position_size'
+    ticker = request.args.get("ticker")
+    ps.calculate_position_size()
+    return ps.output_result()
+    # return random_message
 
 @app.route("/oanda_fees")
 def oanda_fees():
