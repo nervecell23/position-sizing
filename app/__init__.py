@@ -4,11 +4,13 @@ from instance.config import Config
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 
 from app.common.config import Config as AppCfg
 from app.risk.position_size import PositionSize
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(Config)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
