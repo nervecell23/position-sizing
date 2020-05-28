@@ -36,6 +36,7 @@ class ATR:
 
 
     def calculate_atr(self, instrument):
+        self.tr_list = []
         self._populate_candle_list(instrument)
 
         if len(self.candle_list) < self.period+1:
