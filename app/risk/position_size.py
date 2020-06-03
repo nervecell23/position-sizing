@@ -45,11 +45,21 @@ class PositionSize:
 
 
     # main work here
-    def calculate_position_size(self):
-        self._fetch_baserate("GBP_USD")
+    def calculate_position_size(self, ticker):
+        """
+        args
+        ticker: In the form of e.g. "EUR_USD"
+        """
+        self.target_ticker = ticker
+        self.baserate_ticker = self._get_baserate_ticker(ticker)
+        self._fetch_baserate(self.baserate_ticker)
         self._fetch_total_balance()
-        self.current_atr = self.atr.calculate_atr("EUR_USD")
+        self.current_atr = self.atr.calculate_atr(ticker)
         self.position_size = self.balance * self.single_loss_percent * self.latest_baserate / (self.current_atr * self.atr_multiply_coe)
+
+    def _get_baserate_ticker(self, ticker):
+        purchase_currency = ticker.split("_")[1]
+        return "_".join(["GBP", purchase_currency])
 
     def output_result(self):
         r = {}
@@ -64,6 +74,9 @@ class PositionSize:
     def print_result(self):
         print(f"Active account: {self.ctx.active_account}")
         print(f"-> Current balance: {self.balance}")
+        print("---------------------------------------------------")
+        print(f"Target ticker: {self.target_ticker}")
+        print(f"Baserate ticker: {self.baserate_ticker}")
         print(f"-> Current base rate: {self.latest_baserate:.5f} @ {datetime.fromtimestamp(float(self.latest_baserate_time))}")
         print(f"-> Current ATR({self.atr.period}): {self.current_atr:.5f}")
         print(f"-> Position Size: {self.position_size:.1f}")
@@ -91,12 +104,11 @@ class PositionSize:
                 self.latest_baserate = (price.bids[0].price + price.asks[0].price) / 2.0
 
 if __name__ == "__main__":
-    os.environ["TESTING"] = "FALSE"
-    #os.environ["TESTING"] = "TRUE"
+    os.environ["TESTING"] = "TRUE"
     ctx = Config()
     ctx.load()
     ctx.validate()
     api = ctx.create_context()
     ps = PositionSize(ctx, api)
-    ps.calculate_position_size()
+    ps.calculate_position_size("USD_JPY")
     ps.print_result()
