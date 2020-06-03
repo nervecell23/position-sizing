@@ -12,6 +12,15 @@ class FetchBalanceError(Exception):
     def __str__(self):
         return f"status: {self.status}\ndetails: {self.msg}"
 
+class InvalidGranularity(Exception):
+    def __init__(self, granularity):
+        self.granularity = granularity
+
+    def __str__(self):
+        return f"{self.granularity} is not a valid granularity"
+
+
+
 class PositionSize:
     ATR_MULTIPLY_COEFFICIENT = 2.5
     SINGLE_LOSS_PERCENT = 0.02
@@ -45,21 +54,28 @@ class PositionSize:
 
 
     # main work here
-    def calculate_position_size(self, ticker):
+    def calculate_position_size(self, ticker, granularity):
         """
         args
         ticker: In the form of e.g. "EUR_USD"
         """
+        self._validate_granularity(granularity)
         self.target_ticker = ticker
         self.baserate_ticker = self._get_baserate_ticker(ticker)
         self._fetch_baserate(self.baserate_ticker)
         self._fetch_total_balance()
-        self.current_atr = self.atr.calculate_atr(ticker)
+        self.current_atr = self.atr.calculate_atr(ticker, granularity)
         self.position_size = self.balance * self.single_loss_percent * self.latest_baserate / (self.current_atr * self.atr_multiply_coe)
 
     def _get_baserate_ticker(self, ticker):
         purchase_currency = ticker.split("_")[1]
         return "_".join(["GBP", purchase_currency])
+
+    def _validate_granularity(self, granularity):
+        acceptable_granularity = ["S5", "S10", "S15", "S30", "M1", "M2", "M4", "M5", "M10", "M15", "M30", "H1", "H2", "H3", "H4", "H6", "H8", "H12", "D", "W", "M"]
+        if granularity not in acceptable_granularity:
+            raise InvalidGranularity(granularity)
+
 
     def output_result(self):
         r = {}
@@ -110,5 +126,5 @@ if __name__ == "__main__":
     ctx.validate()
     api = ctx.create_context()
     ps = PositionSize(ctx, api)
-    ps.calculate_position_size("USD_JPY")
+    ps.calculate_position_size("USD_JPY", "H8")
     ps.print_result()

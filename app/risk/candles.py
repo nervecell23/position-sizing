@@ -8,9 +8,9 @@ class Candles:
     def __init__(self, api):
         self.api = api
         self.kwargs = {}
-        self.kwargs["granularity"] = "H8"
 
-    def fetch_candles(self, instrument, candle_count):
+    def fetch_candles(self, instrument, candle_count, granularity):
+        self.kwargs["granularity"] = granularity
         self.kwargs["count"] = candle_count
         response = self.api.instrument.candles(instrument, **self.kwargs)
         candle_list = []
