@@ -85,6 +85,8 @@ class PositionSize:
         r["base_rate_time"] = self.latest_baserate_time
         r["atr"] = self.current_atr
         r["position_size"] = self.position_size
+        r["target_ticker"] = self.target_ticker
+        r["baserate_ticker"] = self.baserate_ticker
         return r
 
     def print_result(self):
