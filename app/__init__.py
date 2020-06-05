@@ -20,7 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 from app.models import users
 
 # create OANDA V20 api and context
-os.environ["TESTING"] = "FALSE"
+os.environ["TESTING"] = "TRUE"
 ctx = AppCfg()
 ctx.load()
 ctx.validate()
