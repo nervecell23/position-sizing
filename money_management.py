@@ -9,7 +9,8 @@ def hello():
 @app.route("/position_size")
 def position_size():
     ticker = request.args.get("ticker")
-    ps.calculate_position_size()
+    granularity = request.args.get("granularity")
+    ps.calculate_position_size(ticker, granularity)
     return ps.output_result()
     # return random_message
 
