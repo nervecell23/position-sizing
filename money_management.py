@@ -8,9 +8,13 @@ def hello():
 
 @app.route("/position_size")
 def position_size():
+    kwargs = {}
     ticker = request.args.get("ticker")
     granularity = request.args.get("granularity")
-    ps.calculate_position_size(ticker, granularity)
+    manual_balance = request.args.get("manual_balance")
+    if manual_balance != "":
+        kwargs = {"manual_balance": float(manual_balance)}
+    ps.calculate_position_size(ticker, granularity, **kwargs)
     return ps.output_result()
     # return random_message
 
