@@ -21,16 +21,18 @@ class ATR:
         self.candles = candles_class(api=self.api)
         self.updated_time = datetime.fromtimestamp(0.0)
         self.period = period
+        self.prev_ticker = None
 
     def _populate_candle_list(self, instrument, granularity):
         fetched_updated_time, fetched_candle_list = self.candles.fetch_candles(instrument, self.period+2, granularity)
 
-        if self._is_updated(fetched_updated_time):
+        if self._is_updated(fetched_updated_time, instrument):
             self.candle_list = fetched_candle_list[-(self.period+1):]
             self.updated_time = fetched_updated_time
+            self.prev_ticker = instrument
 
-    def _is_updated(self, dt):
-        if dt > self.updated_time:
+    def _is_updated(self, dt, ticker):
+        if dt > self.updated_time or ticker != self.prev_ticker :
             return True
         return False
 
