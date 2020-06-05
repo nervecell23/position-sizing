@@ -54,7 +54,7 @@ class PositionSize:
 
 
     # main work here
-    def calculate_position_size(self, ticker, granularity):
+    def calculate_position_size(self, ticker, granularity, **kwargs):
         """
         args
         ticker: In the form of e.g. "EUR_USD"
@@ -63,7 +63,11 @@ class PositionSize:
         self.target_ticker = ticker
         self.baserate_ticker = self._get_baserate_ticker(ticker)
         self._fetch_baserate(self.baserate_ticker)
-        self._fetch_total_balance()
+        manual_balance = kwargs.get("manual_balance", None)
+        if manual_balance:
+            self.balance = manual_balance
+        else:
+            self._fetch_total_balance()
         self.current_atr = self.atr.calculate_atr(ticker, granularity)
         self.position_size = self.balance * self.single_loss_percent * self.latest_baserate / (self.current_atr * self.atr_multiply_coe)
 
@@ -128,5 +132,5 @@ if __name__ == "__main__":
     ctx.validate()
     api = ctx.create_context()
     ps = PositionSize(ctx, api)
-    ps.calculate_position_size("USD_JPY", "H8")
+    ps.calculate_position_size("USD_JPY", "H8", **{"manual_balance": 9999.0})
     ps.print_result()
