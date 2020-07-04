@@ -9,13 +9,13 @@ from flask_cors import CORS
 from app.common.config import Config as AppCfg
 from app.risk.position_size import PositionSize
 
-app = Flask(__name__)
-CORS(app)
-app.config.from_object(Config)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+pos_size_app = Flask(__name__)
+CORS(pos_size_app)
+pos_size_app.config.from_object(Config)
+pos_size_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# db = SQLAlchemy(app)
-# migrate = Migrate(app, db)
+# db = SQLAlchemy(pos_size_app)
+# migrate = Migrate(pos_size_app, db)
 
 from app.models import users
 
