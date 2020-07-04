@@ -1,1 +1,1 @@
-# python_practise
+# A position sizing utility
