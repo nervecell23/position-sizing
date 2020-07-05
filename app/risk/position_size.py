@@ -5,21 +5,21 @@ from app.risk.atr import ATR
 from datetime import datetime
 
 class FetchBaserateError(Exception):
-    def __init__(self, time, value):
-        self.time = time 
-        self.value = self.value 
+    def __init__(self, msg):
+        self.msg = msg 
 
     def __str__(self):
-        return f"time: {self.time}, baserate: {self.value}"
+        return f"{self.msg}"
+
 class APIRequestError(Exception):
     pass
+
 class FetchBalanceError(Exception):
-    def __init__(self, status, msg):
-        self.status = status
+    def __init__(self, msg):
         self.msg = msg
 
     def __str__(self):
-        return f"status: {self.status}\ndetails: {self.msg}"
+        return f"{self.msg}"
 
 class InvalidGranularity(Exception):
     def __init__(self, granularity):
@@ -127,7 +127,7 @@ class PositionSize:
         response_status = response.status
         if response_status != 200:
             msg = response.body["errorMessage"]
-            raise FetchBalanceError(response_status, msg)
+            raise FetchBalanceError(msg)
         self.balance = response.get("account").balance + self.saxo_balance + self.forex_balance
 
     def _fetch_baserate(self, instrument):
@@ -139,7 +139,7 @@ class PositionSize:
         response = self.api.pricing.get(accountID=self.ctx.active_account, instruments=instrument, since=self.latest_baserate_time)
 
         if response.status != 200:
-            raise FetchBaserateError(response.status, response.body["errorMessage"])
+            raise FetchBaserateError(response.body["errorMessage"])
 
         prices = response.get("prices", 200)
 
@@ -148,7 +148,7 @@ class PositionSize:
                 self.latest_baserate_time = price.time
                 self.latest_baserate = (price.bids[0].price + price.asks[0].price) / 2.0
         if not self.latest_baserate_time:
-            raise FetchBaserateError()
+            raise FetchBaserateError("baserate is None")
 
 if __name__ == "__main__":
     os.environ["TESTING"] = "TRUE"
