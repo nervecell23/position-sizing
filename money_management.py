@@ -1,12 +1,12 @@
-from app import pos_size_app, random_message, ps
+from app import app, random_message, ps
 from flask import request
 # a random comment
-@pos_size_app.route("/")
+@app.route("/")
 def hello():
     # return "Humble Money Management Tool"
     return random_message
 
-@pos_size_app.route("/position_size")
+@app.route("/position_size")
 def position_size():
     kwargs = {}
     ticker = request.args.get("ticker")
@@ -18,13 +18,13 @@ def position_size():
     result = ps.output_result()
     return result, 200
 
-@pos_size_app.route("/oanda_fees")
+@app.route("/oanda_fees")
 def oanda_fees():
     return random_message + ' oanda fees'
 
-@pos_size_app.route("/etoro_fees")
+@app.route("/etoro_fees")
 def etoro_fees():
     return random_message + ' etoro fees'
 
 if __name__ == '__main__':
-    pos_size_app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0")
