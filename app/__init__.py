@@ -1,15 +1,15 @@
 import os
-from flask import Flask, render_template
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-
+from config import DevelopmentConfig
 from app.common.config import Config as APIConfig
 from app.risk.position_size import PositionSize
 
 app = Flask(__name__)
 CORS(app)
-app.config.from_object(os.environ["APP_TESTINGS"])
+app.config.from_object(DevelopmentConfig)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
