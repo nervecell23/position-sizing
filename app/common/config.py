@@ -77,10 +77,10 @@ class Config:
         Load config from YML file into Config instance,
         load secret config from environment variable into Config instance
         """
-        if os.environ.get("TESTING", None) == "TRUE":
-            path = Path(__file__).parent / "apiconf" / "conf_practise.yml"
-        else:
-            path = Path(__file__).parent / "apiconf" / "conf.yml"
+        if os.environ.get("FLASK_ENV", None) == "development":
+            path = Path(__file__).parent.parent.parent / "common" / "oanda_api_practise.yml"
+        elif os.environ.get("FLASK_ENV", None) == "production":
+            path = Path(__file__).parent.parent.parent / "common" / "oanda_api.yml"
 
         try:
             with open(path) as f:
