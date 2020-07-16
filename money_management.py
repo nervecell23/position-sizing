@@ -1,10 +1,10 @@
-from app import ps_app, random_message, ps
+from app import ps_app, ps
 from flask import request
 # a random comment
 @ps_app.route("/")
 def hello():
     # return "Humble Money Management Tool"
-    return random_message
+    return "Hello!"
 
 @ps_app.route("/position_size")
 def position_size():
@@ -27,4 +27,4 @@ def etoro_fees():
     return random_message + ' etoro fees'
 
 if __name__ == '__main__':
-    ps_app.run(host="0.0.0.0")
+    ps_app.run()

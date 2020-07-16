@@ -18,4 +18,3 @@ ctx.load()
 ctx.validate()
 api = ctx.create_context()
 ps = PositionSize(ctx, api)
-random_message = "Hello :)"
