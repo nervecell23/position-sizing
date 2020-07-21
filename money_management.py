@@ -11,9 +11,11 @@ def position_size():
     kwargs = {}
     ticker = request.args.get("ticker")
     granularity = request.args.get("granularity")
-    manual_balance = request.args.get("manual_balance")
-    if manual_balance != "":
+    manual_balance_gbp = request.args.get("manual_balance_gbp")
+    if manual_balance_gbp != "":
         kwargs = {"manual_balance": float(manual_balance)}
+    if manual_balance_usd == '':
+        #raise error message
     ps.calculate_position_size(ticker, granularity, **kwargs)
     result = ps.output_result()
     return result, 200
