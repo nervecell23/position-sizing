@@ -25,7 +25,7 @@ def position_size():
 
 @ps_app.route('/test')
 def test_func():
-    raise BadRequest('This is a test')
+    raise BadRequest('THIS IS TEST ERROR MESSAGE')
     return 'This should not be reached'
 
 @ps_app.route("/oanda_fees")
@@ -34,5 +34,13 @@ def oanda_fees():
 @ps_app.route("/etoro_fees")
 def etoro_fees():
     pass
+
+# Error handler
+@ps_app.errorhandler(BadRequest)
+def test_error_handler(e):
+    return e
+
+
+
 if __name__ == '__main__':
     ps_app.run()
