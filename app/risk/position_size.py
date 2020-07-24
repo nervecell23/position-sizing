@@ -3,13 +3,6 @@ from app.common.config import Config
 from app.risk.atr import ATR
 from datetime import datetime
 
-class InputError(Exception):
-    def __init__(self, msg):
-        self.msg = msg 
-
-    def __str__(self):
-        return self.msg
-
 class FetchBaserateError(Exception):
     def __init__(self, msg):
         self.msg = msg 
@@ -102,9 +95,22 @@ class PositionSize:
         # Handle USD account
         self.baserate_ticker = self._get_baserate_ticker(ticker, base_ticker='USD')
         self._fetch_baserate(self.baserate_ticker)
-        manual_balance_usd = kwargs.get('manual_balance_usd', None) 
-        if not manual_balance_usd:
-            raise InputError('Balance for USD account can not be None')
+        manual_balance_usd = kwargs.get('manual_balance_usd', None)
+        if manual_balance_usd == None:
+            raise Exception('USD account balance must be provided')
+        self.balance_usd = manual_balance_usd
+        
+
+        print("=================")
+        print(manual_balance_usd)
+        print(self.balance_usd)
+        print(self.latest_baserate)
+        print(self.current_atr)
+
+
+
+
+
         self.position_size_usd = self.balance_usd * self.single_loss_percent * self.latest_baserate / (self.current_atr * self.atr_multiply_coe)
 
     def _get_baserate_ticker(self, ticker, base_ticker="GBP"):
@@ -128,7 +134,7 @@ class PositionSize:
             raise FetchBalanceError(msg)
         self.balance_gbp = response.get("account").balance + self.saxo_balance + self.forex_balance
 
-    def _is_same_ticker(ticker):
+    def _is_same_ticker(self, ticker):
         temp = ticker.split('_')
         if temp[0] == temp[1]:
             self.latest_baserate = 1.0
@@ -139,7 +145,7 @@ class PositionSize:
     def _fetch_baserate(self, instrument):
         self.latest_baserate_time = None 
         self.latest_baserate = None
-        if _is_same_ticker(instrument):
+        if self._is_same_ticker(instrument):
             return
         response = self.api.pricing.get(accountID=self.ctx.active_account, instruments=instrument, since=self.latest_baserate_time)
         if response.status != 200:
@@ -154,12 +160,13 @@ class PositionSize:
 
     def output_result(self):
         r = {}
-        r["balance (GBP)"] = self.balance_gbp
+        r["balance_gbp"] = self.balance_gbp
+        r['balance_usd'] = self.balance_usd
         r["account_number"] = self.ctx.active_account
         r["atr"] = self.current_atr
-        r["position_size"] = self.position_size_gbp
+        r["position_size_gbp"] = self.position_size_gbp
+        r['position_size_usd'] = self.position_size_usd
         r["target_ticker"] = self.target_ticker
-        r["baserate_ticker"] = self.baserate_ticker
         return r
 
     def print_result(self):

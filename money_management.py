@@ -14,19 +14,19 @@ def position_size():
     granularity = request.args.get("granularity")
     manual_balance_gbp = request.args.get("manual_balance_gbp")
     manual_balance_usd = request.args.get('manual_balance_usd')
-    if manual_balance_gbp != "":
-        kwargs = {"manual_balance": float(manual_balance_gbp)}
-    if manual_balance_usd == '':
-        #raise error message
-        raise BadRequest('Balance of USD account cannot be None')
+    print('===================')
+    print(manual_balance_gbp)
+    print(manual_balance_usd)
+    print('===================')
+    if manual_balance_gbp != '' and manual_balance_gbp != None:
+        kwargs = {"manual_balance_gbp": float(manual_balance_gbp)} 
+    if manual_balance_usd == '' or manual_balance_usd == None:
+        raise BadRequest('Balance of USD account must be provided')
+    else:
+        kwargs['manual_balance_usd'] = float(manual_balance_usd)
     ps.calculate_position_size(ticker, granularity, **kwargs)
     result = ps.output_result()
     return result, 200
-
-@ps_app.route('/test')
-def test_func():
-    raise BadRequest('THIS IS TEST ERROR MESSAGE')
-    return 'This should not be reached'
 
 @ps_app.route("/oanda_fees")
 def oanda_fees():
@@ -37,8 +37,8 @@ def etoro_fees():
 
 # Error handler
 @ps_app.errorhandler(BadRequest)
-def test_error_handler(e):
-    return e
+def bad_request_handler(e):
+    return str(e), 400
 
 
 
