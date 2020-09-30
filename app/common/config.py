@@ -92,6 +92,7 @@ class Config:
         self.token = os.environ.get("TOKEN", self.token)
         self.active_account = os.environ.get("ACT_ACCOUNT", self.active_account)
         self.hostname = os.environ.get("HOSTNAME", self.hostname)
+        self.streaming_hostname = os.environ.get("STREAM_HOSTNAME", self.streaming_hostname)
         self.port = os.environ.get("PORT", self.port)
         self.ssl = os.environ.get("SSL", self.ssl)
         self.datetime_format = os.environ.get("DATETIME_FORMAT", self.datetime_format)
