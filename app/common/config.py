@@ -71,7 +71,7 @@ class Config:
         s += "active_account: {}".format(self.active_account)
         return s
 
-    def _config_from_yaml(path):
+    def _config_from_yaml(self, path):
         try:
             with open(path) as f:
                 y = yaml.load(f, Loader=yaml.FullLoader)
