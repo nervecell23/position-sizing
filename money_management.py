@@ -2,10 +2,12 @@ from app import ps_app, ps
 from werkzeug.exceptions import BadRequest
 from flask import request
 # a random comment
+
+
 @ps_app.route("/")
 def hello():
-    # return "Humble Money Management Tool"
-    return "Hello!"
+    return "Humble Money Management Tool"
+
 
 @ps_app.route("/position_size")
 def position_size():
@@ -19,7 +21,7 @@ def position_size():
     print(manual_balance_usd)
     print('===================')
     if manual_balance_gbp != '' and manual_balance_gbp != None:
-        kwargs = {"manual_balance_gbp": float(manual_balance_gbp)} 
+        kwargs = {"manual_balance_gbp": float(manual_balance_gbp)}
     if manual_balance_usd == '' or manual_balance_usd == None:
         raise BadRequest('Balance of USD account must be provided')
     else:
@@ -28,18 +30,22 @@ def position_size():
     result = ps.output_result()
     return result, 200
 
+
 @ps_app.route("/oanda_fees")
 def oanda_fees():
     pass
+
+
 @ps_app.route("/etoro_fees")
 def etoro_fees():
     pass
 
 # Error handler
+
+
 @ps_app.errorhandler(BadRequest)
 def bad_request_handler(e):
     return str(e), 400
-
 
 
 if __name__ == '__main__':
