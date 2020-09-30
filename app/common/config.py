@@ -69,19 +69,9 @@ class Config:
         for a in self.accounts:
             s += "- {}\n".format(a)
         s += "active_account: {}".format(self.active_account)
-
         return s
 
-    def load(self):
-        """
-        Load config from YML file into Config instance,
-        load secret config from environment variable into Config instance
-        """
-        if os.environ.get("FLASK_ENV", None) == "development":
-            path = Path(__file__).parent.parent.parent / "secret" / "oanda_api_practise.yml"
-        elif os.environ.get("FLASK_ENV", None) == "production":
-            path = Path(__file__).parent.parent.parent  / "secret" / "oanda_api.yml"
-
+    def _config_from_yaml(path):
         try:
             with open(path) as f:
                 y = yaml.load(f, Loader=yaml.FullLoader)
@@ -96,6 +86,31 @@ class Config:
                 self.datetime_format = y.get("datetime_format", self.datetime_format)
         except:
             raise ConfigPathError(path)
+
+    def _config_from_env(self):
+        self.username = os.environ.get("USERNAME", self.username)
+        self.token = os.environ.get("TOKEN", self.token)
+        self.active_account = os.environ.get("ACT_ACCOUNT", self.active_account)
+        self.hostname = os.environ.get("HOSTNAME", self.hostname)
+        self.port = os.environ.get("PORT", self.port)
+        self.ssl = os.environ.get("SSL", self.ssl)
+        self.datetime_format = os.environ.get("DATETIME_FORMAT", self.datetime_format)
+
+
+    def load(self):
+        """
+        Load config from YML file into Config instance if under development environment
+        Load config from environment variable if under production environment
+        """
+        if os.environ.get("FLASK_ENV", None) == "development":
+            path = Path(__file__).parent.parent.parent / "secret" / "oanda_api_practise.yml"
+            _config_from_yaml(path)
+        elif os.environ.get("FLASK_ENV", None) == "production":
+            _config_from_env()
+        else:
+            raise Exception("FLASK_ENV is not specified")
+
+
 
     def validate(self):
         """
@@ -114,8 +129,8 @@ class Config:
             raise ConfigValueError("username")
         if self.token is None:
             raise ConfigValueError("token")
-        if self.accounts is None:
-            raise ConfigValueError("account")
+        # if self.accounts is None:
+        #     raise ConfigValueError("account")
         if self.active_account is None:
             raise ConfigValueError("account")
         if self.datetime_format is None:
