@@ -104,9 +104,9 @@ class Config:
         """
         if os.environ.get("FLASK_ENV", None) == "development":
             path = Path(__file__).parent.parent.parent / "secret" / "oanda_api_practise.yml"
-            _config_from_yaml(path)
+            self._config_from_yaml(path)
         elif os.environ.get("FLASK_ENV", None) == "production":
-            _config_from_env()
+            self._config_from_env()
         else:
             raise Exception("FLASK_ENV is not specified")
 
