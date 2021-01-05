@@ -14,19 +14,18 @@ def position_size():
     kwargs = {}
     ticker = request.args.get("ticker")
     granularity = request.args.get("granularity")
+    print(f"gg: {granularity}")
+    if granularity != '':
+        kwargs["granularity"] = granularity
     manual_balance_gbp = request.args.get("manual_balance_gbp")
     manual_balance_usd = request.args.get('manual_balance_usd')
-    print('===================')
-    print(manual_balance_gbp)
-    print(manual_balance_usd)
-    print('===================')
     if manual_balance_gbp != '' and manual_balance_gbp != None:
-        kwargs = {"manual_balance_gbp": float(manual_balance_gbp)}
+        kwargs["manual_balance_gbp"] = float(manual_balance_gbp)
     if manual_balance_usd == '' or manual_balance_usd == None:
         raise BadRequest('Balance of USD account must be provided')
     else:
         kwargs['manual_balance_usd'] = float(manual_balance_usd)
-    ps.calculate_position_size(ticker, granularity, **kwargs)
+    ps.calculate_position_size(ticker, **kwargs)
     result = ps.output_result()
     return result, 200
 

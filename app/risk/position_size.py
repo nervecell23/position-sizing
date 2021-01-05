@@ -36,6 +36,7 @@ class PositionSize:
 
     SAXO_BALANCE = 18295.38
     FOREX_BALANCE = 237.69
+    DEFAULT_GRANULARITY = 'D'
 
     def __init__(
             self,
@@ -43,8 +44,10 @@ class PositionSize:
             api,
 
             saxo_balance=SAXO_BALANCE,
-            forex_balance=FOREX_BALANCE):
+            forex_balance=FOREX_BALANCE,
+            default_granularity=DEFAULT_GRANULARITY):
 
+        self.default_granularity = default_granularity
         self.api = api
         self.ctx = ctx
         self.atr = ATR(api=self.api)
@@ -63,7 +66,7 @@ class PositionSize:
 
     # main work here
 
-    def calculate_position_size(self, ticker, granularity, atr_multiply_coe=2.0,
+    def calculate_position_size(self, ticker, atr_multiply_coe=2.0,
                                 single_loss_percent=0.03, **kwargs):
         """
         This function calculates position size for two platform. One for GBP account, the other for USD account.
@@ -74,6 +77,11 @@ class PositionSize:
         **kwargs - 
             manual_balance_gbp - if this field is included, then account balance will not be fetched through platform API.
         """
+        granularity = kwargs.get("granularity", None)
+        print(kwargs)
+        print(granularity)
+        if granularity == None:
+            granularity = self.default_granularity
         self.error = None
         self._validate_granularity(granularity)
         self.target_ticker = ticker
